@@ -1,0 +1,245 @@
+{
+  "choose_poultry": {
+    "title": "Выбрать птицу",
+    "goal": "Подобрать вид птицы и примерные породы или кроссы",
+    "questions": [
+      {
+        "id": "purpose",
+        "text": "Для какой цели вы хотите разводить птицу?",
+        "type": "buttons",
+        "options": [
+          { "value": "eggs", "label": "Яйца" },
+          { "value": "meat", "label": "Мясо" },
+          { "value": "universal", "label": "И яйца, и мясо" },
+          { "value": "sale", "label": "Для продажи" }
+        ]
+      },
+      {
+        "id": "experience",
+        "text": "Какой у вас опыт?",
+        "type": "buttons",
+        "options": [
+          { "value": "beginner", "label": "Новичок" },
+          { "value": "some", "label": "Есть небольшой опыт" },
+          { "value": "farmer", "label": "Фермер" }
+        ]
+      },
+      {
+        "id": "countRange",
+        "text": "Сколько птиц планируете содержать на старте?",
+        "type": "buttons",
+        "options": [
+          { "value": "up_to_10", "label": "До 10" },
+          { "value": "10_30", "label": "10–30" },
+          { "value": "more_30", "label": "Более 30" }
+        ]
+      },
+      {
+        "id": "warmHousing",
+        "text": "Есть ли теплое помещение для зимнего содержания?",
+        "type": "buttons",
+        "options": [
+          { "value": "yes", "label": "Да" },
+          { "value": "no", "label": "Нет" },
+          { "value": "planned", "label": "Планирую построить" }
+        ]
+      }
+    ]
+  },
+  "calculate_farm": {
+    "title": "Рассчитать хозяйство",
+    "goal": "Рассчитать базовые параметры помещения, выгула, корма и оборудования",
+    "questions": [
+      {
+        "id": "birdType",
+        "text": "Какую птицу планируете содержать?",
+        "type": "buttons",
+        "options": [
+          { "value": "chickens", "label": "Куры" },
+          { "value": "ducks", "label": "Утки" },
+          { "value": "geese", "label": "Гуси" },
+          { "value": "turkeys", "label": "Индюки" },
+          { "value": "quails", "label": "Перепела" }
+        ]
+      },
+      {
+        "id": "count",
+        "text": "Сколько голов планируете?",
+        "type": "buttons_with_custom",
+        "options": [
+          { "value": 10, "label": "10" },
+          { "value": 20, "label": "20" },
+          { "value": 50, "label": "50" },
+          { "value": 100, "label": "100" },
+          { "value": "custom", "label": "Другое" }
+        ]
+      },
+      {
+        "id": "farmGoal",
+        "text": "Какая цель хозяйства?",
+        "type": "buttons",
+        "options": [
+          { "value": "family", "label": "Для семьи" },
+          { "value": "sale", "label": "Для продажи" },
+          { "value": "test", "label": "Тестовый запуск" }
+        ]
+      }
+    ]
+  },
+  "feeding": {
+    "title": "Подобрать кормление",
+    "goal": "Дать базовую схему кормления",
+    "questions": [
+      {
+        "id": "birdType",
+        "text": "Какую птицу кормим?",
+        "type": "buttons",
+        "options": [
+          { "value": "chickens", "label": "Куры" },
+          { "value": "ducks", "label": "Утки" },
+          { "value": "geese", "label": "Гуси" },
+          { "value": "turkeys", "label": "Индюки" },
+          { "value": "quails", "label": "Перепела" }
+        ]
+      },
+      {
+        "id": "age",
+        "text": "Какой возраст птицы?",
+        "type": "buttons",
+        "options": [
+          { "value": "chicks", "label": "Птенцы" },
+          { "value": "young", "label": "Молодняк" },
+          { "value": "adult", "label": "Взрослая птица" }
+        ]
+      },
+      {
+        "id": "feedingGoal",
+        "text": "Какая основная цель кормления?",
+        "type": "buttons",
+        "options": [
+          { "value": "eggs", "label": "Яйценоскость" },
+          { "value": "meat", "label": "Рост на мясо" },
+          { "value": "maintenance", "label": "Обычное содержание" }
+        ]
+      }
+    ]
+  },
+  "economics": {
+    "title": "Прикинуть экономику",
+    "goal": "Сравнить стартовые затраты, текущие расходы, доходы или экономию и грубо оценить точку безубыточности",
+    "questions": [
+      {
+        "id": "birdType",
+        "text": "Для какой птицы прикидываем экономику?",
+        "type": "buttons",
+        "options": [
+          { "value": "chickens", "label": "Куры" },
+          { "value": "ducks", "label": "Утки" },
+          { "value": "geese", "label": "Гуси" },
+          { "value": "turkeys", "label": "Индюки" },
+          { "value": "quails", "label": "Перепела" }
+        ]
+      },
+      {
+        "id": "count",
+        "text": "Сколько голов берем в расчет?",
+        "type": "buttons_with_custom",
+        "options": [
+          { "value": 10, "label": "10" },
+          { "value": 20, "label": "20" },
+          { "value": 50, "label": "50" },
+          { "value": 100, "label": "100" },
+          { "value": "custom", "label": "Другое" }
+        ]
+      },
+      {
+        "id": "economyModel",
+        "text": "Какой вариант сравнения нужен?",
+        "type": "buttons",
+        "options": [
+          { "value": "eggs_sale", "label": "Продажа яйца" },
+          { "value": "meat_sale", "label": "Продажа мяса" },
+          { "value": "family_budget", "label": "Экономия для семьи" }
+        ]
+      }
+    ]
+  },
+  "problems": {
+    "title": "Проблемы и болезни",
+    "goal": "Собрать симптомы и дать безопасный чек-лист проверки без диагноза",
+    "questions": [
+      {
+        "id": "problemType",
+        "text": "Что происходит?",
+        "type": "buttons",
+        "options": [
+          { "value": "no_eggs", "label": "Перестали нестись" },
+          { "value": "thin_shell", "label": "Тонкая скорлупа" },
+          { "value": "low_appetite", "label": "Плохо едят" },
+          { "value": "lethargic", "label": "Вялые" },
+          { "value": "slow_growth", "label": "Медленно растут" },
+          { "value": "other", "label": "Другое" }
+        ]
+      },
+      {
+        "id": "age",
+        "text": "Какой возраст птицы?",
+        "type": "buttons",
+        "options": [
+          { "value": "under_6_months", "label": "До 6 месяцев" },
+          { "value": "6_12_months", "label": "6–12 месяцев" },
+          { "value": "over_1_year", "label": "Старше года" }
+        ]
+      },
+      {
+        "id": "changes",
+        "text": "Были ли недавно изменения в корме, свете, температуре или условиях?",
+        "type": "buttons",
+        "options": [
+          { "value": "feed", "label": "Меняли корм" },
+          { "value": "light", "label": "Меняли свет" },
+          { "value": "temperature", "label": "Были перепады температуры" },
+          { "value": "no", "label": "Нет изменений" },
+          { "value": "not_sure", "label": "Не уверен" }
+        ]
+      }
+    ]
+  },
+  "beginner": {
+    "title": "Я новичок",
+    "goal": "Выдать простой план запуска домашней мини-фермы",
+    "questions": [
+      {
+        "id": "desiredResult",
+        "text": "Что хотите получить в первую очередь?",
+        "type": "buttons",
+        "options": [
+          { "value": "home_eggs", "label": "Домашние яйца" },
+          { "value": "family_meat", "label": "Мясо для семьи" },
+          { "value": "small_income", "label": "Небольшой заработок" },
+          { "value": "try_farm", "label": "Попробовать мини-ферму" }
+        ]
+      },
+      {
+        "id": "place",
+        "text": "Где планируете содержать птицу?",
+        "type": "buttons",
+        "options": [
+          { "value": "dacha", "label": "Дача" },
+          { "value": "private_house", "label": "Частный дом" },
+          { "value": "village", "label": "Деревня/ферма" }
+        ]
+      },
+      {
+        "id": "startSize",
+        "text": "С какого масштаба готовы начать?",
+        "type": "buttons",
+        "options": [
+          { "value": "5_10", "label": "5–10 голов" },
+          { "value": "10_30", "label": "10–30 голов" },
+          { "value": "more_30", "label": "Больше 30" }
+        ]
+      }
+    ]
+  }
+}

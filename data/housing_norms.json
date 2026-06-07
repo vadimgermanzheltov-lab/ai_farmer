@@ -1,0 +1,39 @@
+{
+  "chickens": {
+    "indoorAreaM2PerBird": 0.35,
+    "runAreaM2PerBird": 1.2,
+    "feedGramsPerDayPerBird": 120,
+    "nestsPerBirds": 4,
+    "roostCmPerBird": 25,
+    "water": "чистая вода постоянно",
+    "notes": ["для несушек важен световой режим", "зимой нужен сухой и защищенный от сквозняков курятник"]
+  },
+  "ducks": {
+    "indoorAreaM2PerBird": 0.5,
+    "runAreaM2PerBird": 2.0,
+    "feedGramsPerDayPerBird": 180,
+    "water": "постоянный доступ к воде для питья; купание желательно, но не всегда обязательно",
+    "notes": ["подстилку нужно менять чаще из-за влажности", "важна защита от сырости"]
+  },
+  "geese": {
+    "indoorAreaM2PerBird": 0.8,
+    "runAreaM2PerBird": 5.0,
+    "feedGramsPerDayPerBird": 250,
+    "water": "постоянный доступ к воде; просторный выгул крайне желателен",
+    "notes": ["лучше подходят для участков с большим выгулом", "могут быть шумными"]
+  },
+  "turkeys": {
+    "indoorAreaM2PerBird": 0.8,
+    "runAreaM2PerBird": 3.0,
+    "feedGramsPerDayPerBird": 250,
+    "water": "чистая вода постоянно",
+    "notes": ["для молодняка особенно важны тепло и сухость", "требуется больше внимания, чем для кур"]
+  },
+  "quails": {
+    "indoorAreaM2PerBird": 0.03,
+    "runAreaM2PerBird": 0,
+    "feedGramsPerDayPerBird": 30,
+    "water": "чистая вода постоянно, лучше ниппельные поилки",
+    "notes": ["обычно содержатся в клетках", "важны стабильная температура и освещение"]
+  }
+}

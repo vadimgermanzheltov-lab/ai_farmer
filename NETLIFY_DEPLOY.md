@@ -10,7 +10,7 @@
 В этом режиме сайт работает как демо: без серверного AI-ответа, но со всеми локальными сценариями и рекомендациями.
 
 ## Вариант 2. Публикация с безопасным AI через Netlify Functions
-Лучше использовать Git-подключение или Netlify CLI, чтобы Netlify собрал проект и развернул функцию `netlify/functions/openrouter.mjs`.
+Проект можно публиковать напрямую из GitHub без отдельного шага сборки. Netlify развернет статический сайт из корня репозитория и подключит функцию `netlify/functions/openrouter.mjs`.
 
 ### Переменные окружения в Netlify
 Добавьте в настройках сайта:
@@ -27,12 +27,18 @@ OPENROUTER_MODEL=openai/gpt-4o-mini
 OPENROUTER_SITE_NAME=Smart Poultry House Demo
 ```
 
-### Настройки сборки
-Проект уже подготовлен:
+### Настройки в Netlify
+Если файлы проекта лежат в корне репозитория, укажите:
 
-- `netlify.toml` использует `publish = "dist"`
-- build command: `node scripts/build-static.mjs`
+- Base directory: оставить пустым
+- Build command: оставить пустым
+- Publish directory: оставить пустым или `.`
+
+`netlify.toml` уже задает:
+
+- `publish = "."`
 - functions directory: `netlify/functions`
+- redirect `/images/*` -> `/public/images/*`
 
 ### Что важно
 - Не храните реальный OpenRouter key в клиентском `.env` для публичного сайта.

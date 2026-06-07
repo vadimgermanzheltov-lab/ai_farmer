@@ -1,7 +1,11 @@
 [build]
-  command = "node scripts/build-static.mjs"
-  publish = "dist"
+  publish = "."
 
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/images/*"
+  to = "/public/images/:splat"
+  status = 200

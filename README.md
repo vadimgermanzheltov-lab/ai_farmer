@@ -75,7 +75,9 @@ OPENROUTER_MODEL=openai/gpt-4o-mini
 OPENROUTER_SITE_NAME=Smart Poultry House Demo
 ```
 
-4. Перезапустите deploy
+4. В настройках сборки оставьте пустыми `Base directory` и `Build command`
+5. `Publish directory` оставьте пустым или укажите `.`
+6. Перезапустите deploy
 
 В этом режиме фронтенд не хранит ключ в публичном коде. Вызов AI идет через `/.netlify/functions/openrouter`.
 

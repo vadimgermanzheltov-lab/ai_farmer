@@ -1,0 +1,65 @@
+{
+  "version": "1.0",
+  "note": "Для демо используются легкие SVG-иллюстрации. В продакшене их можно заменить на реальные фото пород, курятников и оборудования с сохранением тех же путей или обновлением imageUrl.",
+  "poultryImages": {
+    "chickens": {
+      "title": "Куры",
+      "imageUrl": "/images/chickens.svg",
+      "alt": "Иллюстрация кур-несушек"
+    },
+    "broilers": {
+      "title": "Бройлеры",
+      "imageUrl": "/images/broilers.svg",
+      "alt": "Иллюстрация мясного направления птицы"
+    },
+    "ducks": {
+      "title": "Утки",
+      "imageUrl": "/images/ducks.svg",
+      "alt": "Иллюстрация уток"
+    },
+    "geese": {
+      "title": "Гуси",
+      "imageUrl": "/images/geese.svg",
+      "alt": "Иллюстрация гусей"
+    },
+    "turkeys": {
+      "title": "Индюки",
+      "imageUrl": "/images/turkeys.svg",
+      "alt": "Иллюстрация индюков"
+    },
+    "quails": {
+      "title": "Перепела",
+      "imageUrl": "/images/quails.svg",
+      "alt": "Иллюстрация перепелов"
+    }
+  },
+  "housingImages": {
+    "small_coop": {
+      "title": "Малый курятник",
+      "imageUrl": "/images/small_coop.svg",
+      "alt": "Иллюстрация малого курятника"
+    },
+    "medium_coop": {
+      "title": "Средний курятник",
+      "imageUrl": "/images/medium_coop.svg",
+      "alt": "Иллюстрация среднего курятника"
+    },
+    "walk_area": {
+      "title": "Выгул",
+      "imageUrl": "/images/walk_area.svg",
+      "alt": "Иллюстрация зоны выгула"
+    },
+    "feeders": {
+      "title": "Кормушки и поилки",
+      "imageUrl": "/images/feeders.svg",
+      "alt": "Иллюстрация кормушек и поилок"
+    }
+  },
+  "uiRules": {
+    "showHeroImageOnStart": true,
+    "showPoultryCardsInChooseScenario": true,
+    "showHousingCardsInCalculationResult": true,
+    "maxImagesPerScreen": 3,
+    "imageStyle": "rounded cards, soft shadows, farm/warm natural colors"
+  }
+}
