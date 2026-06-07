@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Умный птичник</title>
+    <link rel="stylesheet" href="./styles.css?v=20260607-restore1" />
+  </head>
+  <body>
+    <div id="app">
+      <div style="max-width: 960px; margin: 40px auto; padding: 24px; font-family: 'Trebuchet MS', 'Segoe UI', sans-serif; color: #283126;">
+        <h1 style="margin: 0 0 12px; font-size: 34px;">Умный птичник</h1>
+        <p id="boot-status" style="margin: 0; line-height: 1.6;">Загружаю интерфейс...</p>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var statusNode = document.getElementById("boot-status");
+
+        function setStatus(text) {
+          if (statusNode) {
+            statusNode.textContent = text;
+          }
+        }
+
+        async function boot() {
+          try {
+            setStatus("Подключаю основной сценарий приложения...");
+            var response = await fetch("./app.js?v=20260607-restore1", { cache: "no-store" });
+            if (!response.ok) {
+              throw new Error("HTTP " + response.status);
+            }
+
+            var source = await response.text();
+            setStatus("Восстанавливаю диалоговую логику...");
+            new Function(source)();
+          } catch (error) {
+            console.error("Bootstrap failed", error);
+            setStatus("Не удалось загрузить основную логику приложения. Проверьте, что на Netlify обновился файл app.js.");
+          }
+        }
+
+        boot();
+      })();
+    </script>
+  </body>
+</html>
