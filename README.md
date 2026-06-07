@@ -1,2 +1,89 @@
-# ai_farmer
-an app for novice poultry farmers. Helps you choose a breed and poultry farming direction.
+# Умный птичник
+
+`Умный птичник` — это демо веб-приложение с диалоговым интерфейсом для подбора домашней птицы, расчета хозяйства, кормления, базовой экономики и безопасных рекомендаций для новичков.
+
+## Что умеет
+- Подобрать вид птицы под цель и масштаб старта
+- Помочь выбрать породу и продолжить диалог по следующему шагу
+- Рассчитать помещение, выгул, корм и базовое оборудование
+- Подсказать схему кормления
+- Дать безопасный чек-лист по частым проблемам без диагноза и лечения
+- Прикинуть упрощенную экономику и точку безубыточности
+
+## Стек
+- Статический фронтенд: `index.html`, `app.js`, `styles.css`
+- Локальные данные в JSON
+- Netlify Functions для безопасного вызова OpenRouter
+
+## Структура
+- `app.js` — основная логика диалога и рекомендаций
+- `styles.css` — стили интерфейса
+- `data/` — рабочие JSON-данные приложения
+- `public/images/` — SVG-иллюстрации
+- `netlify/functions/openrouter.mjs` — безопасный серверный слой для OpenRouter
+- `scripts/build-static.mjs` — подготовка папки `dist` для публикации
+- `netlify.toml` — конфигурация Netlify
+
+## Локальная подготовка
+Если нужен только просмотр интерфейса, можно открыть `index.html` напрямую.
+
+Если нужен подготовленный статический пакет для публикации:
+
+```powershell
+node scripts/build-static.mjs
+```
+
+После этого готовая версия окажется в папке `dist/`.
+
+## Публикация на GitHub
+1. Создайте пустой репозиторий на GitHub, например `smart-poultry-house`.
+2. Загрузите содержимое этой папки в репозиторий.
+3. Рекомендуемо не коммитить `dist/`, потому что Netlify собирает его сам.
+
+Если у вас есть локальный Git, базовая последовательность будет такой:
+
+```powershell
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/<your-name>/smart-poultry-house.git
+git push -u origin main
+```
+
+## Публикация на Netlify
+
+### Вариант 1. Быстрая демо-публикация без AI
+1. Соберите папку `dist` командой:
+
+```powershell
+node scripts/build-static.mjs
+```
+
+2. Откройте [Netlify Drop](https://app.netlify.com/drop)
+3. Перетащите папку `dist`
+4. Получите публичную ссылку `*.netlify.app`
+
+### Вариант 2. Публикация через GitHub с безопасным AI
+1. Подключите GitHub-репозиторий в Netlify
+2. Netlify автоматически прочитает `netlify.toml`
+3. Добавьте переменные окружения в настройках сайта:
+
+```text
+OPENROUTER_API_KEY=your_openrouter_key_here
+OPENROUTER_MODEL=openai/gpt-4o-mini
+OPENROUTER_SITE_NAME=Smart Poultry House Demo
+```
+
+4. Перезапустите deploy
+
+В этом режиме фронтенд не хранит ключ в публичном коде. Вызов AI идет через `/.netlify/functions/openrouter`.
+
+## Безопасность
+- Не размещайте реальный OpenRouter key в клиентском `.env` публичного сайта
+- Для публичной версии используйте только серверные переменные окружения в Netlify
+- По вопросам здоровья птицы приложение не ставит диагнозы и не назначает лекарства
+
+## Полезные файлы
+- [NETLIFY_DEPLOY.md](./NETLIFY_DEPLOY.md)
+- [.env.example](./.env.example)

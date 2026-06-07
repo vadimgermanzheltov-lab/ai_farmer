@@ -1,0 +1,39 @@
+ai-farmer-demo/
+├─ .env.example
+├─ package.json
+├─ src/
+│  ├─ App.jsx
+│  ├─ main.jsx
+│  ├─ components/
+│  │  ├─ ChatWindow.jsx
+│  │  ├─ QuickButtons.jsx
+│  │  ├─ RecommendationCard.jsx
+│  │  └─ ScenarioRunner.jsx
+│  ├─ data/
+│  │  ├─ app_config.json
+│  │  ├─ poultry_catalog.json
+│  │  ├─ housing_norms.json
+│  │  ├─ scenarios.json
+│  │  ├─ recommendation_templates.json
+│  │  └─ safety_rules.json
+│  ├─ services/
+│  │  └─ openrouter.js
+│  └─ utils/
+│     ├─ calculations.js
+│     └─ promptBuilder.js
+└─ README.md
+
+
+Дополнение по визуалам:
+/public/images/
+  chickens.svg
+  broilers.svg
+  ducks.svg
+  geese.svg
+  turkeys.svg
+  quails.svg
+  small_coop.svg
+  medium_coop.svg
+  walk_area.svg
+  feeders.svg
+/data/visual_assets.json
