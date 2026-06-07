@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Умный птичник</title>
+    <link rel="stylesheet" href="./styles.css?v=20260607-restore2" />
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script>
+      (function () {
+        var app = document.getElementById("app");
+        if (!app) return;
+
+        var birds = {
+          chickens: {
+            name: "Куры",
+            difficulty: "низкая",
+            goodForBeginners: true,
+            breeds: {
+              eggs: ["Ломан Браун", "Хайсекс Браун", "Русская белая"],
+              meat: ["Кобб-500", "Росс-308"],
+              universal: ["Кучинская юбилейная", "Адлерская серебристая", "Плимутрок"]
+            },
+            pros: ["понятный уход", "доступные корма", "быстрый практический результат"],
+            cons: ["нужна защита от хищников", "важны свет и чистота", "зимой нужно сухое помещение"],
+            indoor: 0.35,
+            run: 1.2,
+            feed: 120,
+            nestsRatio: 4,
+            roostCm: 25
+          },
+          ducks: {
+            name: "Утки",
+            difficulty: "средняя",
+            goodForBeginners: true,
+            breeds: {
+              eggs: ["Индийские бегуны"],
+              meat: ["Пекинская", "Муларды", "Башкирская"],
+              universal: ["Башкирская", "Мускусная"]
+            },
+            pros: ["подходят для мяса", "быстрый рост", "активно используют выгул"],
+            cons: ["больше влаги и грязи", "нужна хорошая подстилка", "важен удобный доступ к воде"],
+            indoor: 0.5,
+            run: 2,
+            feed: 180
+          },
+          geese: {
+            name: "Гуси",
+            difficulty: "средняя",
+            goodForBeginners: false,
+            breeds: {
+              meat: ["Линдовская", "Холмогорская", "Крупная серая"],
+              universal: ["Линдовская", "Кубанская"]
+            },
+            pros: ["подходят для просторного участка", "хороши на выгуле", "крупная птица"],
+            cons: ["нужно больше места", "шумные", "не лучший старт для маленького участка"],
+            indoor: 0.8,
+            run: 5,
+            feed: 250
+          },
+          turkeys: {
+            name: "Индюки",
+            difficulty: "высокая",
+            goodForBeginners: false,
+            breeds: {
+              meat: ["БИГ-6", "Бронзовая широкогрудая", "Белая широкогрудая"]
+            },
+            pros: ["перспективны для продажи", "ценное мясо", "крупная птица"],
+            cons: ["требовательны к условиям", "молодняк чувствителен", "нужен внимательный уход"],
+            indoor: 0.8,
+            run: 3,
+            feed: 250
+          },
+          quails: {
+            name: "Перепела",
+            difficulty: "средняя",
+            goodForBeginners: true,
+            breeds: {
+              eggs: ["Японский перепел", "Английский белый"],
+              meat: ["Фараон", "Техасский белый"],
+              universal: ["Эстонский"]
+            },
+            pros: ["компактный формат", "быстрый старт", "удобны для мини-проекта"],
+            cons: ["нужны клетки", "важны температура и свет", "нужен регулярный уход"],
+            indoor: 0.03,
+            run: 0,
+            feed: 30
+          }
+        };
+
+        var economics = {
+          chickens: { young: 420, feedPrice: 34, eggPrice: 12, eggsMonthly: 22, meatRevenue: 950, cycleMonths: 2.5, coopSmall: 18000, coopMedium: 42000, equip: 220, bedding: 35, utilities: 900 },
+          ducks: { young: 520, feedPrice: 32, eggPrice: 13, eggsMonthly: 16, meatRevenue: 1500, cycleMonths: 3, coopSmall: 22000, coopMedium: 48000, equip: 240, bedding: 45, utilities: 1000 },
+          geese: { young: 700, feedPrice: 30, eggPrice: 0, eggsMonthly: 0, meatRevenue: 2600, cycleMonths: 4, coopSmall: 26000, coopMedium: 56000, equip: 300, bedding: 55, utilities: 1200 },
+          turkeys: { young: 750, feedPrice: 36, eggPrice: 0, eggsMonthly: 0, meatRevenue: 3200, cycleMonths: 4.5, coopSmall: 30000, coopMedium: 62000, equip: 340, bedding: 60, utilities: 1400 },
+          quails: { young: 180, feedPrice: 48, eggPrice: 6, eggsMonthly: 24, meatRevenue: 280, cycleMonths: 2, coopSmall: 12000, coopMedium: 26000, equip: 160, bedding: 18, utilities: 700 }
+        };
+
+        var scenarios = {
+          choose_poultry: {
+            title: "Выбрать птицу",
+            goal: "Подобрать вид птицы и примерные породы или кроссы",
+            questions: [
+              { id: "purpose", text: "Для какой цели?", type: "buttons", options: [
+                { value: "eggs", label: "Яйца" },
+                { value: "meat", label: "Мясо" },
+                { value: "universal", label: "Яйца и мясо" },
+                { value: "sale", label: "Продажа" }
+              ]},
+              { id: "experience", text: "Какой опыт?", type: "buttons", options: [
+                { value: "beginner", label: "Новичок" },
+                { value: "some", label: "Есть опыт" },
+                { value: "farmer", label: "Фермер" }
+              ]},
+              { id: "countRange", text: "Сколько голов планируете на старте?", type: "buttons", options: [
+                { value: "up_to_10", label: "До 10" },
+                { value: "10_30", label: "10-30" },
+                { value: "more_30", label: "Более 30" }
+              ]},
+              { id: "warmHousing", text: "Есть ли тёплое помещение?", type: "buttons", options: [
+                { value: "yes", label: "Да" },
+                { value: "no", label: "Нет" },
+                { value: "planned", label: "Планирую построить" }
+              ]}
+            ]
+          },
+          calculate_farm: {
+            title: "Рассчитать хозяйство",
+            goal: "Рассчитать помещение, выгул, корм и базовое оборудование",
+            questions: [
+              { id: "birdType", text: "Какую птицу планируете содержать?", type: "buttons", options: birdOptions() },
+              { id: "count", text: "Сколько голов планируете?", type: "buttons_with_custom", options: countOptions() },
+              { id: "farmGoal", text: "Какая цель хозяйства?", type: "buttons", options: [
+                { value: "family", label: "Для семьи" },
+                { value: "sale", label: "Для продажи" },
+                { value: "test", label: "Тестовый запуск" }
+              ]}
+            ]
+          },
+          feeding: {
+            title: "Подобрать кормление",
+            goal: "Дать базовую схему кормления",
+            questions: [
+              { id: "birdType", text: "Какую птицу кормим?", type: "buttons", options: birdOptions() },
+              { id: "age", text: "Какой возраст птицы?", type: "buttons", options: [
+                { value: "chicks", label: "Птенцы" },
+                { value: "young", label: "Молодняк" },
+                { value: "adult", label: "Взрослая птица" }
+              ]},
+              { id: "feedingGoal", text: "Какая основная цель кормления?", type: "buttons", options: [
+                { value: "eggs", label: "Яйценоскость" },
+                { value: "meat", label: "Рост на мясо" },
+                { value: "maintenance", label: "Обычное содержание" }
+              ]}
+            ]
+          },
+          economics: {
+            title: "Прикинуть экономику",
+            goal: "Сравнить стартовые затраты, текущие расходы и ориентир по окупаемости",
+            questions: [
+              { id: "birdType", text: "Для какой птицы прикидываем экономику?", type: "buttons", options: birdOptions() },
+              { id: "count", text: "Сколько голов берём в расчёт?", type: "buttons_with_custom", options: countOptions() },
+              { id: "economyModel", text: "Какой вариант сравнения нужен?", type: "buttons", options: [
+                { value: "eggs_sale", label: "Продажа яйца" },
+                { value: "meat_sale", label: "Продажа мяса" },
+                { value: "family_budget", label: "Экономия для семьи" }
+              ]}
+            ]
+          },
+          problems: {
+            title: "Проблемы и болезни",
+            goal: "Собрать симптомы и дать безопасный чек-лист без диагноза",
+            questions: [
+              { id: "problemType", text: "Что происходит?", type: "buttons", options: [
+                { value: "no_eggs", label: "Перестали нестись" },
+                { value: "thin_shell", label: "Тонкая скорлупа" },
+                { value: "low_appetite", label: "Плохо едят" },
+                { value: "lethargic", label: "Вялые" },
+                { value: "slow_growth", label: "Медленно растут" },
+                { value: "other", label: "Другое" }
+              ]},
+              { id: "age", text: "Какой возраст птицы?", type: "buttons", options: [
+                { value: "under_6_months", label: "До 6 месяцев" },
+                { value: "6_12_months", label: "6-12 месяцев" },
+                { value: "over_1_year", label: "Старше года" }
+              ]},
+              { id: "changes", text: "Менялись ли корм, свет или температура?", type: "buttons", options: [
+                { value: "feed", label: "Меняли корм" },
+                { value: "light", label: "Меняли свет" },
+                { value: "temperature", label: "Были перепады температуры" },
+                { value: "no", label: "Нет изменений" },
+                { value: "not_sure", label: "Не уверен" }
+              ]}
+            ]
+          },
+          beginner: {
+            title: "Я новичок",
+            goal: "Выдать простой план запуска",
+            questions: [
+              { id: "desiredResult", text: "Что хотите получить?", type: "buttons", options: [
+                { value: "home_eggs", label: "Домашние яйца" },
+                { value: "family_meat", label: "Мясо для семьи" },
+                { value: "small_income", label: "Небольшой заработок" },
+                { value: "try_farm", label: "Попробовать мини-ферму" }
+              ]},
+              { id: "place", text: "Где будете содержать?", type: "buttons", options: [
+                { value: "dacha", label: "Дача" },
+                { value: "private_house", label: "Частный дом" },
+                { value: "village", label: "Деревня/ферма" }
+              ]},
+              { id: "startSize", text: "С какого масштаба готовы начать?", type: "buttons", options: [
+                { value: "5_10", label: "5-10 голов" },
+                { value: "10_30", label: "10-30 голов" },
+                { value: "more_30", label: "Больше 30" }
+              ]}
+            ]
+          }
+        };
+
+        var state = {
+          messages: [],
+          activeScenarioId: null,
+          questionIndex: 0,
+          answers: {},
+          draftMessage: "",
+          freeQuestionMode: false,
+          pendingAction: null,
+          userProfile: {
+            birdType: null,
+            breed: null,
+            count: null,
+            purpose: null,
+            economyModel: null
+          }
+        };
+
+        function birdOptions() {
+          return [
+            { value: "chickens", label: "Куры" },
+            { value: "ducks", label: "Утки" },
+            { value: "geese", label: "Гуси" },
+            { value: "turkeys", label: "Индюки" },
+            { value: "quails", label: "Перепела" }
+          ];
+        }
+
+        function countOptions() {
+          return [
+            { value: 10, label: "10" },
+            { value: 20, label: "20" },
+            { value: 50, label: "50" },
+            { value: 100, label: "100" },
+            { value: "custom", label: "Другое" }
+          ];
+        }
+
+        function esc(value) {
+          return String(value == null ? "" : value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        }
+
+        function fmt(value) {
+          return new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 1 }).format(value);
+        }
+
+        function fmtMoney(value) {
+          return new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB", maximumFractionDigits: 0 }).format(Math.round(value));
+        }
+
+        function currentScenario() {
+          return state.activeScenarioId ? scenarios[state.activeScenarioId] : null;
+        }
+
+        function currentQuestion() {
+          var scenario = currentScenario();
+          return scenario ? scenario.questions[state.questionIndex] || null : null;
+        }
+
+        function resetConversation() {
+          state.activeScenarioId = null;
+          state.questionIndex = 0;
+          state.answers = {};
+          state.freeQuestionMode = false;
+          state.pendingAction = null;
+          state.draftMessage = "";
+          state.messages = [
+            { role: "assistant", label: "Умный птичник", text: "Здравствуйте! Я помогу выбрать птицу, рассчитать хозяйство, подобрать кормление и прикинуть простую экономику." },
+            { role: "system", label: "Как пользоваться", text: "1. Выберите сценарий плиткой ниже. 2. Отвечайте в основном кнопками. 3. В конце получите план и сможете продолжить маршрут дальше." }
+          ];
+          render();
+        }
+
+        function pushMessage(role, label, text, recommendation) {
+          state.messages.push({
+            role: role,
+            label: label,
+            text: text,
+            recommendation: recommendation || null
+          });
+        }
+
+        function renderPlan(rec) {
+          if (!rec) return "";
+          return [
+            '<div class="plan-card">',
+            '<div class="plan-header"><strong>Ваш план</strong><span>' + esc(rec.title) + "</span></div>",
+            '<p class="plan-intro">' + esc(rec.summary) + "</p>",
+            '<div class="section-list">',
+            rec.sections.map(function (section) {
+              var content = Array.isArray(section.content)
+                ? "<ul>" + section.content.map(function (item) { return "<li>" + esc(item) + "</li>"; }).join("") + "</ul>"
+                : "<p>" + esc(section.content) + "</p>";
+              return '<section class="plan-section"><strong>' + esc(section.title) + "</strong>" + content + "</section>";
+            }).join(""),
+            "</div>",
+            rec.warning ? '<div class="warning-box">' + esc(rec.warning) + "</div>" : "",
+            rec.followUps && rec.followUps.length ? [
+              '<div class="followup-block">',
+              '<div class="followup-title">Продолжить диалог</div>',
+              '<div class="option-grid">',
+              rec.followUps.map(function (item) {
+                return '<button class="quick-button followup-button" data-action="follow-up" data-follow-up="' + esc(item.action) + '"><strong>' + esc(item.title) + "</strong><span>" + esc(item.description) + "</span></button>";
+              }).join(""),
+              "</div>",
+              "</div>"
+            ].join("") : "",
+            "</div>"
+          ].join("");
+        }
+
+        function renderMessages() {
+          return state.messages.map(function (message) {
+            return '<article class="message ' + esc(message.role) + '">' +
+              (message.label ? '<div class="message-label">' + esc(message.label) + "</div>" : "") +
+              "<p>" + esc(message.text || "") + "</p>" +
+              renderPlan(message.recommendation) +
+              "</article>";
+          }).join("");
+        }
+
+        function renderActionPanel() {
+          var question = currentQuestion();
+
+          if (state.pendingAction) {
+            return '<div class="action-panel">' +
+              '<div class="panel-title"><strong>' + esc(state.pendingAction.title) + "</strong><span>" + esc(state.pendingAction.subtitle || "Выберите следующий шаг") + "</span></div>" +
+              '<div class="option-grid">' +
+              state.pendingAction.options.map(function (item) {
+                return '<button class="quick-button" data-action="pending-option" data-value="' + esc(String(item.value)) + '"><strong>' + esc(item.label) + "</strong><span>" + esc(item.description || "Выбрать") + "</span></button>";
+              }).join("") +
+              "</div></div>";
+          }
+
+          if (question) {
+            return '<div class="action-panel">' +
+              '<div class="panel-title"><strong>' + esc(question.text) + "</strong><span>Шаг " + (state.questionIndex + 1) + " из " + currentScenario().questions.length + "</span></div>" +
+              '<div class="option-grid">' +
+              question.options.map(function (option) {
+                return '<button class="quick-button" data-action="answer-option" data-value="' + esc(String(option.value)) + '"><strong>' + esc(option.label) + "</strong><span>Выбрать этот вариант</span></button>";
+              }).join("") +
+              "</div>" +
+              (question.type === "buttons_with_custom"
+                ? '<div class="custom-answer"><input id="custom-count-input" type="number" min="1" step="1" placeholder="Своё количество голов" /><button class="custom-submit" data-action="custom-count">Сохранить число</button></div>'
+                : "") +
+              "</div>";
+          }
+
+          if (state.freeQuestionMode) {
+            return '<div class="action-panel"><div class="panel-title"><strong>Свободный вопрос</strong><span>Можно написать вопрос простым текстом</span></div><button class="ghost-button" data-action="close-free-mode">Вернуться к сценариям</button></div>';
+          }
+
+          return '<div class="action-panel">' +
+            '<div class="panel-title"><strong>Выберите сценарий</strong><span>Быстрый старт через крупные плитки</span></div>' +
+            '<div class="option-grid">' +
+            [
+              ["choose_poultry", "🐔 Выбрать птицу", "Подберу вид птицы, породы и спокойный старт."],
+              ["calculate_farm", "📐 Рассчитать хозяйство", "Посчитаю площадь, выгул, корм и оборудование."],
+              ["feeding", "🌾 Подобрать кормление", "Соберу базовую схему кормления."],
+              ["economics", "💰 Прикинуть экономику", "Сравню затраты, расходы и ориентир по окупаемости."],
+              ["problems", "🩺 Проблемы и болезни", "Дам безопасный чек-лист без диагноза."],
+              ["beginner", "👨‍🌾 Я новичок", "Соберу понятный стартовый план."],
+              ["free_question", "✍️ Задать свой вопрос", "Можно написать свободным текстом."]
+            ].map(function (item) {
+              return '<button class="quick-button" data-action="start-scenario" data-scenario="' + item[0] + '"><strong>' + esc(item[1]) + "</strong><span>" + esc(item[2]) + "</span></button>";
+            }).join("") +
+            "</div></div>";
+        }
+
+        function renderComposer() {
+          return '<div class="composer"><div class="composer-inner">' +
+            '<textarea id="composer-input" placeholder="' + esc(state.freeQuestionMode ? "Напишите свой вопрос" : "Можно уточнить вопрос текстом") + '">' + esc(state.draftMessage) + "</textarea>" +
+            '<button class="send-button" data-action="send-text">Отправить</button>' +
+            '</div><div class="composer-hint">' + esc(state.freeQuestionMode ? "Например: что лучше для дачи, куры или перепела?" : "Основной путь в приложении — через плитки и короткие шаги.") + "</div></div>";
+        }
+
+        function render() {
+          var scenario = currentScenario();
+          app.innerHTML = [
+            '<div class="app-shell">',
+            '<aside class="sidebar">',
+            '<div class="eyebrow">Демо-версия • Умный птичник</div>',
+            '<h1>Умный птичник</h1>',
+            '<p class="subtitle">Помощник по домашней птице для спокойного старта</p>',
+            '<div class="guide-card"><strong>Как пользоваться</strong><div class="guide-steps">',
+            '<div class="guide-step">1. Выберите сценарий: птица, хозяйство, кормление, экономика или старт для новичка.</div>',
+            '<div class="guide-step">2. Отвечайте крупными плитками, а текст используйте для уточнений.</div>',
+            '<div class="guide-step">3. После плана продолжайте маршрут дальше: породы, хозяйство, кормление и экономика.</div>',
+            '</div></div>',
+            '<div class="sidebar-note">Информация носит справочный характер. Сервис не ставит диагнозы и не назначает лечение.</div>',
+            "</aside>",
+            '<section class="chat-shell">',
+            '<div class="chat-topbar"><div class="chat-title"><strong>' + esc(scenario ? scenario.title : "Умный птичник") + "</strong><span>" + esc(scenario ? scenario.goal : "Короткие сценарии, связанные шаги и понятный итоговый план") + '</span></div><button class="reset-button" data-action="reset">Начать заново</button></div>',
+            '<div class="messages" id="messages">' + renderMessages() + "</div>",
+            renderActionPanel(),
+            renderComposer(),
+            "</section>",
+            "</div>"
+          ].join("");
+
+          bindEvents();
+          var messages = document.getElementById("messages");
+          if (messages) messages.scrollTop = messages.scrollHeight;
+        }
+
+        function bindEvents() {
+          var composer = document.getElementById("composer-input");
+          if (composer) {
+            composer.addEventListener("input", function (event) {
+              state.draftMessage = event.target.value;
+            });
+            composer.addEventListener("keydown", function (event) {
+              if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                handleSendText();
+              }
+            });
+          }
+
+          app.querySelectorAll("[data-action]").forEach(function (node) {
+            node.addEventListener("click", function () {
+              var action = node.getAttribute("data-action");
+              if (action === "reset") return resetConversation();
+              if (action === "start-scenario") return startScenario(node.getAttribute("data-scenario"));
+              if (action === "answer-option") return answerCurrentQuestion(node.getAttribute("data-value"));
+              if (action === "custom-count") return submitCustomCount();
+              if (action === "send-text") return handleSendText();
+              if (action === "close-free-mode") {
+                state.freeQuestionMode = false;
+                render();
+                return;
+              }
+              if (action === "follow-up") return runFollowUp(node.getAttribute("data-follow-up"));
+              if (action === "pending-option") return handlePendingOption(node.getAttribute("data-value"));
+            });
+          });
+        }
+
+        function startScenario(id) {
+          if (id === "free_question") {
+            state.freeQuestionMode = true;
+            state.activeScenarioId = null;
+            state.questionIndex = 0;
+            state.answers = {};
+            state.pendingAction = null;
+            pushMessage("system", "Подсказка", "Напишите вопрос простыми словами, и я отвечу без перегруза.");
+            return render();
+          }
+
+          state.activeScenarioId = id;
+          state.questionIndex = 0;
+          state.answers = {};
+          state.pendingAction = null;
+          state.freeQuestionMode = false;
+
+          prefillScenario(id);
+          pushMessage("assistant", "Умный птичник", "Сценарий: " + scenarios[id].title + ". Пройдём короткий маршрут и соберём понятный план.");
+          render();
+        }
+
+        function prefillScenario(id) {
+          if ((id === "calculate_farm" || id === "feeding" || id === "economics") && state.userProfile.birdType) {
+            var firstQuestion = scenarios[id].questions[0];
+            if (firstQuestion && firstQuestion.id === "birdType") {
+              state.answers.birdType = state.userProfile.birdType;
+              state.questionIndex = 1;
+            }
+          }
+
+          if ((id === "calculate_farm" || id === "economics") && state.userProfile.count) {
+            var nextQuestion = scenarios[id].questions[state.questionIndex];
+            if (nextQuestion && nextQuestion.id === "count") {
+              state.answers.count = state.userProfile.count;
+              state.questionIndex += 1;
+            }
+          }
+        }
+
+        function answerCurrentQuestion(rawValue) {
+          var question = currentQuestion();
+          if (!question) return;
+
+          if (rawValue === "custom") {
+            var customInput = document.getElementById("custom-count-input");
+            if (customInput) customInput.focus();
+            pushMessage("system", "Подсказка", "Введите своё количество голов в поле ниже и сохраните число.");
+            return render();
+          }
+
+          var value = /^\d+$/.test(String(rawValue)) ? Number(rawValue) : rawValue;
+          var label = String(rawValue);
+          question.options.forEach(function (option) {
+            if (String(option.value) === String(rawValue)) label = option.label;
+          });
+
+          state.answers[question.id] = value;
+          rememberProfile(question.id, value);
+          pushMessage("user", "Вы", label);
+
+          state.questionIndex += 1;
+          if (currentQuestion()) return render();
+          completeScenario();
+        }
+
+        function submitCustomCount() {
+          var input = document.getElementById("custom-count-input");
+          var value = Number(input && input.value);
+          if (!Number.isFinite(value) || value <= 0) {
+            pushMessage("system", "Подсказка", "Введите целое положительное число, например 37.");
+            return render();
+          }
+          answerCurrentQuestion(String(value));
+        }
+
+        function rememberProfile(questionId, value) {
+          if (questionId === "birdType") state.userProfile.birdType = value;
+          if (questionId === "count") state.userProfile.count = Number(value);
+          if (questionId === "purpose") state.userProfile.purpose = value;
+          if (questionId === "feedingGoal") state.userProfile.purpose = value;
+          if (questionId === "economyModel") state.userProfile.economyModel = value;
+        }
+
+        function completeScenario() {
+          var recommendation = buildRecommendation(state.activeScenarioId, state.answers);
+          pushMessage("assistant", "Умный птичник", "Готово. Ниже собрал краткий и практичный план.", recommendation);
+          state.activeScenarioId = null;
+          state.questionIndex = 0;
+          state.answers = {};
+          render();
+        }
+
+        function buildRecommendation(id, answers) {
+          if (id === "choose_poultry") return buildChooseRecommendation(answers);
+          if (id === "calculate_farm") return buildFarmRecommendation(answers);
+          if (id === "feeding") return buildFeedingRecommendation(answers);
+          if (id === "economics") return buildEconomicsRecommendation(answers);
+          if (id === "problems") return buildProblemsRecommendation(answers);
+          if (id === "beginner") return buildBeginnerRecommendation(answers);
+          return { title: "План", summary: "Собрал базовую рекомендацию.", sections: [{ title: "Следующий шаг", content: "Выберите другой сценарий." }] };
+        }
+
+        function pickBirdByAnswers(answers) {
+          if (answers.purpose === "eggs") return answers.experience === "beginner" ? "chickens" : "quails";
+          if (answers.purpose === "meat") return answers.countRange === "up_to_10" ? "ducks" : "chickens";
+          if (answers.purpose === "sale") return answers.experience === "farmer" ? "turkeys" : "chickens";
+          if (answers.warmHousing === "no") return "ducks";
+          return "chickens";
+        }
+
+        function purposeKey(value) {
+          return { eggs: "eggs", meat: "meat", universal: "universal", sale: "universal" }[value] || "universal";
+        }
+
+        function buildChooseRecommendation(answers) {
+          var birdId = pickBirdByAnswers(answers);
+          var bird = birds[birdId];
+          var breeds = bird.breeds[purposeKey(answers.purpose)] || bird.breeds.universal || bird.breeds.eggs || bird.breeds.meat || [];
+
+          state.userProfile.birdType = birdId;
+          state.userProfile.purpose = answers.purpose;
+
+          return {
+            title: "Рекомендация по выбору птицы",
+            summary: "Для ваших условий лучше начать с варианта, который легче в уходе и понятнее по расходам.",
+            sections: [
+              { title: "Краткий вывод", content: "Оптимальный старт для вас: " + bird.name + "." },
+              { title: "Рекомендуемый вариант", content: ["Подходящие породы или кроссы: " + breeds.join(", "), "Сложность старта: " + bird.difficulty + ".", "Для новичка: " + (bird.goodForBeginners ? "да" : "скорее лучше с опытом") + "."] },
+              { title: "Почему подходит", content: bird.pros },
+              { title: "Что подготовить", content: ["Сухое и защищённое помещение.", "Поилки, кормушки и запас подстилки.", answers.warmHousing === "no" ? "Продумайте тёплое содержание на холодный сезон." : "Проверьте вентиляцию и защиту от сквозняков."] },
+              { title: "Частые ошибки", content: bird.cons },
+              { title: "Следующий шаг", content: "Выберите породу, затем переходите к расчёту хозяйства, кормлению и экономике." }
+            ],
+            followUps: [
+              { action: "choose_breeds", title: "Выбрать породы", description: "Собрать список пород под ваш вариант." },
+              { action: "calculate_farm", title: "Рассчитать хозяйство", description: "Прикинуть площадь, выгул и корм." },
+              { action: "feeding", title: "Подобрать кормление", description: "Перейти к базовой схеме кормления." },
+              { action: "economics", title: "Прикинуть экономику", description: "Сравнить расходы и ориентир по результату." }
+            ]
+          };
+        }
+
+        function buildFarmRecommendation(answers) {
+          var birdId = answers.birdType || state.userProfile.birdType || "chickens";
+          var count = Number(answers.count || state.userProfile.count || 10);
+          var bird = birds[birdId];
+          var indoor = bird.indoor * count;
+          var outdoor = bird.run * count;
+          var dayFeed = (bird.feed * count) / 1000;
+          var monthFeed = dayFeed * 30;
+          var nests = bird.nestsRatio ? Math.max(1, Math.ceil(count / bird.nestsRatio)) : null;
+          var roost = bird.roostCm ? Math.ceil((bird.roostCm * count) / 100) : null;
+
+          state.userProfile.birdType = birdId;
+          state.userProfile.count = count;
+
+          return {
+            title: "Расчёт мини-хозяйства",
+            summary: "Ниже ориентировочный расчёт по площади, выгулу, корму и оборудованию.",
+            sections: [
+              { title: "Краткий вывод", content: "Для " + count + " голов птицы " + bird.name.toLowerCase() + " стоит сразу заложить запас по площади и корму." },
+              { title: "Расчёт / параметры", content: [
+                "Площадь помещения: примерно " + fmt(indoor) + " м².",
+                outdoor > 0 ? "Площадь выгула: примерно " + fmt(outdoor) + " м²." : "Выгул обычно не является основным форматом для этого вида.",
+                "Корм в день: около " + fmt(dayFeed) + " кг.",
+                "Корм в месяц: около " + fmt(monthFeed) + " кг."
+              ].concat(nests ? ["Гнёзда: примерно " + nests + "."] : [], roost ? ["Насесты: примерно " + roost + " пог. м."] : []) },
+              { title: "Что подготовить", content: ["Поилки и кормушки с небольшим запасом.", "Подстилку и место для хранения корма.", "Постоянный доступ к чистой воде."] },
+              { title: "Частые ошибки", content: ["Скученность.", "Сырость.", "Отсутствие запаса по корму."] },
+              { title: "Следующий шаг", content: "После расчёта переходите к кормлению и экономике." }
+            ],
+            followUps: [
+              { action: "feeding", title: "Подобрать кормление", description: "Собрать базовую схему кормления." },
+              { action: "economics", title: "Прикинуть экономику", description: "Посчитать стартовые и ежемесячные расходы." }
+            ]
+          };
+        }
+
+        function buildFeedingRecommendation(answers) {
+          var birdId = answers.birdType || state.userProfile.birdType || "chickens";
+          var bird = birds[birdId];
+          var age = answers.age;
+          var goal = answers.feedingGoal;
+          var components = age === "chicks"
+            ? ["Стартовый корм по возрасту.", "Небольшие порции без залеживания.", "Постоянная чистая вода."]
+            : age === "young"
+              ? ["Корм для активного роста.", goal === "meat" ? "Акцент на набор массы." : "Ровный рацион без резких скачков.", "Минеральная поддержка по базовой схеме."]
+              : [goal === "eggs" ? "Рацион с упором на яйценоскость и кальций." : "Базовый полноценный рацион для взрослой птицы.", "Зерновая и комбикормовая часть без перекорма.", "Постоянный доступ к воде."];
+
+          return {
+            title: "Базовая схема кормления",
+            summary: "Это спокойная стартовая схема без перегруза и без ветеринарных назначений.",
+            sections: [
+              { title: "Краткий вывод", content: "Для " + bird.name.toLowerCase() + " важнее всего стабильный режим, вода и базовый рацион по возрасту." },
+              { title: "Основные компоненты рациона", content: components },
+              { title: "Частота кормления", content: age === "chicks" ? ["Кормить чаще и небольшими порциями.", "Следить, чтобы корм не залеживался."] : ["Поддерживать стабильный режим каждый день.", "Не менять график резко без необходимости."] },
+              { title: "Что обязательно должно быть всегда", content: ["Чистая вода.", "Свежий корм без сырости и плесени.", goal === "eggs" ? "Источник кальция и минеральной поддержки." : "Минеральные добавки по базовой схеме содержания."] },
+              { title: "Частые ошибки", content: ["Резко менять рацион.", "Давать корм без режима.", "Забывать про воду и чистоту кормушек."] },
+              { title: "Следующий шаг", content: "Сопоставьте рацион с количеством голов и затем прикиньте экономику." }
+            ],
+            followUps: [
+              { action: "calculate_farm", title: "Рассчитать хозяйство", description: "Сверить корм с количеством голов." },
+              { action: "economics", title: "Прикинуть экономику", description: "Посчитать нагрузку на корм." }
+            ]
+          };
+        }
+
+        function buildEconomicsRecommendation(answers) {
+          var birdId = answers.birdType || state.userProfile.birdType || "chickens";
+          var count = Number(answers.count || state.userProfile.count || 10);
+          var model = answers.economyModel || state.userProfile.economyModel || "family_budget";
+          var eco = economics[birdId];
+          var bird = birds[birdId];
+          var monthFeed = ((bird.feed * count) / 1000) * 30;
+          var startup = (count <= 20 ? eco.coopSmall : eco.coopMedium) + eco.equip * count + eco.young * count;
+          var monthly = eco.feedPrice * monthFeed + eco.bedding * count + eco.utilities;
+          var result = 0;
+          var resultText = "";
+
+          if (model === "eggs_sale") {
+            result = eco.eggPrice * eco.eggsMonthly * count - monthly;
+            resultText = "При продаже яйца ориентировочный ежемесячный результат может быть около " + fmtMoney(result) + ".";
+          } else if (model === "meat_sale") {
+            result = eco.meatRevenue * count - monthly * eco.cycleMonths;
+            resultText = "За один цикл выращивания ориентировочный результат может быть около " + fmtMoney(result) + ".";
+          } else {
+            result = eco.eggPrice * Math.max(eco.eggsMonthly, 12) * count - monthly;
+            resultText = "Как семейная модель это даёт ориентир по экономии или частичному возврату расходов около " + fmtMoney(result) + " в месяц.";
+          }
+
+          state.userProfile.birdType = birdId;
+          state.userProfile.count = count;
+          state.userProfile.economyModel = model;
+
+          return {
+            title: "Упрощённая экономика",
+            summary: "Это грубая оценка для старта, чтобы сравнить расходы, доходы и ориентир по окупаемости.",
+            sections: [
+              { title: "Краткий вывод", content: "Для " + bird.name.toLowerCase() + " на " + count + " голов важно отдельно смотреть стартовые вложения и ежемесячную нагрузку." },
+              { title: "Расходы", content: ["Стартовые вложения: около " + fmtMoney(startup) + ".", "Ежемесячные расходы: около " + fmtMoney(monthly) + ".", "Корм в месяц: примерно " + fmt(monthFeed) + " кг."] },
+              { title: "Доходы / экономия", content: resultText },
+              { title: "Точка безубыточности", content: result > 0 ? "Вложения могут отбиваться примерно за " + fmt(startup / result) + " мес." : "При этих вводных проект выглядит напряжённым по экономике, лучше уменьшить старт или пересмотреть модель." },
+              { title: "Что подготовить", content: ["Сделать запас по корму и подстилке на первый месяц.", "Сразу заложить мелкие непредвиденные расходы.", "Сравнить семейный и продажный сценарий."] },
+              { title: "Следующий шаг", content: "Сверьте расчёт с реальной площадью и затем переходите к содержанию и кормлению." }
+            ],
+            followUps: [
+              { action: "calculate_farm", title: "Рассчитать хозяйство", description: "Сверить экономику с площадью и выгулом." },
+              { action: "feeding", title: "Подобрать кормление", description: "Проверить рацион и нагрузку на корм." }
+            ]
+          };
+        }
+
+        function buildProblemsRecommendation() {
+          return {
+            title: "Чек-лист первичной проверки",
+            summary: "Ниже только безопасный бытовой чек-лист. Это не диагноз и не назначение лечения.",
+            sections: [
+              { title: "Возможные бытовые причины", content: ["Корм и вода.", "Световой режим.", "Температура и сырость.", "Скученность или стресс."] },
+              { title: "Что проверить в первую очередь", content: ["Свежесть воды и корма.", "Температуру и свет.", "Чистоту подстилки, кормушек и поилок.", "Нет ли сквозняков и сырости."] },
+              { title: "Когда срочно обращаться к ветеринару", content: ["Есть падёж.", "Птица отказывается от воды.", "Вялость выраженная и не проходит.", "Есть подозрение на инфекцию."] },
+              { title: "Что не стоит делать самостоятельно", content: ["Не назначать лекарства наугад.", "Не давать дозировки без специалиста.", "Не считать это диагнозом по одному симптому."] }
+            ],
+            warning: "Это не диагноз и не назначение лечения. При ухудшении состояния обратитесь к ветеринарному специалисту."
+          };
+        }
+
+        function buildBeginnerRecommendation(answers) {
+          var birdId = answers.desiredResult === "family_meat" ? "ducks" : answers.desiredResult === "try_farm" ? "quails" : "chickens";
+          var bird = birds[birdId];
+          state.userProfile.birdType = birdId;
+
+          return {
+            title: "План запуска для новичка",
+            summary: "Ниже самый спокойный старт, чтобы войти в птицеводство без лишнего риска и перегруза.",
+            sections: [
+              { title: "Рекомендуемый старт", content: "Лучше начать с варианта " + bird.name + " и небольшого масштаба." },
+              { title: "План подготовки на 30 дней", content: ["Неделя 1: выбрать птицу, место и масштаб.", "Неделя 2: подготовить помещение, поилки, кормушки и подстилку.", "Неделя 3: закупить стартовый корм и всё проверить по воде и вентиляции.", "Неделя 4: завести первую птицу и вести спокойный режим наблюдения."] },
+              { title: "Минимальный список покупок", content: ["Поилки и кормушки.", "Подстилка и запас корма.", "Простой инвентарь для уборки.", "Освещение и защита от сырости."] },
+              { title: "Ошибки новичков", content: ["Начинать слишком большим объёмом.", "Покупать птицу до подготовки помещения.", "Менять рацион и условия слишком резко."] },
+              { title: "Следующий шаг", content: "Выберите породу под этот старт и затем переходите к расчёту хозяйства." }
+            ],
+            followUps: [
+              { action: "choose_breeds", title: "Выбрать породы", description: "Собрать подходящие породы под старт." },
+              { action: "calculate_farm", title: "Рассчитать хозяйство", description: "Прикинуть площадь, корм и оборудование." }
+            ]
+          };
+        }
+
+        function runFollowUp(action) {
+          if (action === "choose_breeds") return openBreedPicker();
+          if (action === "calculate_farm" || action === "feeding" || action === "economics") return startScenario(action);
+        }
+
+        function openBreedPicker() {
+          var birdId = state.userProfile.birdType;
+          var bird = birds[birdId];
+          if (!bird) {
+            pushMessage("system", "Подсказка", "Сначала лучше выбрать птицу, а затем переходить к породам.");
+            return render();
+          }
+
+          var breeds = bird.breeds[purposeKey(state.userProfile.purpose)] || bird.breeds.universal || bird.breeds.eggs || bird.breeds.meat || [];
+          state.pendingAction = {
+            type: "breed",
+            title: "Выберите породу",
+            subtitle: "Сохраним выбор и продолжим маршрут дальше",
+            options: breeds.map(function (breed) {
+              return { value: breed, label: breed, description: "Сохранить этот вариант" };
+            })
+          };
+          render();
+        }
+
+        function handlePendingOption(value) {
+          if (!state.pendingAction) return;
+
+          if (state.pendingAction.type === "breed") {
+            state.userProfile.breed = value;
+            pushMessage("user", "Вы", value);
+            pushMessage("assistant", "Умный птичник", "Порода сохранена. Теперь можно перейти к расчёту хозяйства, кормлению или экономике.");
+            state.pendingAction = {
+              type: "next_step",
+              title: "Что делаем дальше?",
+              subtitle: "Выбор птицы уже сохранён",
+              options: [
+                { value: "calculate_farm", label: "Рассчитать хозяйство", description: "Площадь, выгул, корм и оборудование." },
+                { value: "feeding", label: "Подобрать кормление", description: "Собрать базовую схему кормления." },
+                { value: "economics", label: "Прикинуть экономику", description: "Сравнить расходы и ориентир по результату." }
+              ]
+            };
+            return render();
+          }
+
+          if (state.pendingAction.type === "next_step") {
+            state.pendingAction = null;
+            startScenario(value);
+          }
+        }
+
+        function handleSendText() {
+          var text = String(state.draftMessage || "").trim();
+          if (!text) return;
+          pushMessage("user", "Вы", text);
+          state.draftMessage = "";
+
+          if (state.freeQuestionMode) {
+            var lower = text.toLowerCase();
+            if (/(бол|симптом|вял|не ест|не пьет|скорлуп|нест)/.test(lower)) {
+              pushMessage("assistant", "Умный птичник", "Это не диагноз и не назначение лечения. Проверьте воду, корм, свет, температуру, чистоту и при ухудшении состояния обратитесь к ветеринарному специалисту.");
+            } else if (lower.indexOf("куры") !== -1 || lower.indexOf("переп") !== -1) {
+              pushMessage("assistant", "Умный птичник", "Для спокойного старта чаще всего выбирают кур-несушек, а перепела хороши, если места мало и нужен компактный проект.");
+            } else {
+              pushMessage("assistant", "Умный птичник", "Могу помочь по выбору птицы, условиям содержания, кормлению, базовой экономике и безопасной первичной проверке частых проблем.");
+            }
+          } else {
+            pushMessage("assistant", "Умный птичник", "Если хотите идти по шагам, выберите сценарий плиткой ниже. Если вопрос про симптомы, я дам только безопасный чек-лист без диагноза и лекарств.");
+          }
+
+          render();
+        }
+
+        resetConversation();
+      })();
+    </script>
+  </body>
+</html>
